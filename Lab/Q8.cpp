@@ -16,58 +16,47 @@ class AVLTree {
 private:
     AVLNode* root;
     
-    // Get height of node
     int height(AVLNode* node) {
         return node ? node->height : 0;
     }
     
-    // Get balance factor
     int getBalance(AVLNode* node) {
         return node ? height(node->left) - height(node->right) : 0;
     }
     
-    // Update height of node
     void updateHeight(AVLNode* node) {
         if (node) {
             node->height = 1 + max(height(node->left), height(node->right));
         }
     }
     
-    // Right rotation
     AVLNode* rotateRight(AVLNode* y) {
         AVLNode* x = y->left;
         AVLNode* T2 = x->right;
         
-        // Perform rotation
         x->right = y;
         y->left = T2;
         
-        // Update heights
         updateHeight(y);
         updateHeight(x);
         
         return x;
     }
     
-    // Left rotation
     AVLNode* rotateLeft(AVLNode* x) {
         AVLNode* y = x->right;
         AVLNode* T2 = y->left;
         
-        // Perform rotation
         y->left = x;
         x->right = T2;
         
-        // Update heights
         updateHeight(x);
         updateHeight(y);
         
         return y;
     }
     
-    // Insert helper
     AVLNode* insertHelper(AVLNode* node, int key) {
-        // Standard BST insertion
         if (!node) return new AVLNode(key);
         
         if (key < node->key)
@@ -75,12 +64,9 @@ private:
         else if (key > node->key)
             node->right = insertHelper(node->right, key);
         else
-            return node; // Duplicate keys not allowed
+            return node;
         
-        // Update height
         updateHeight(node);
-        
-        // Get balance factor
         int balance = getBalance(node);
         
         // Left Left Case
@@ -106,7 +92,6 @@ private:
         return node;
     }
     
-    // Find minimum value node
     AVLNode* minValueNode(AVLNode* node) {
         AVLNode* current = node;
         while (current->left)
@@ -114,9 +99,7 @@ private:
         return current;
     }
     
-    // Delete helper
     AVLNode* deleteHelper(AVLNode* node, int key) {
-        // Standard BST deletion
         if (!node) return node;
         
         if (key < node->key) {
@@ -126,22 +109,18 @@ private:
             node->right = deleteHelper(node->right, key);
         }
         else {
-            // Node with only one child or no child
             if (!node->left || !node->right) {
                 AVLNode* temp = node->left ? node->left : node->right;
                 
                 if (!temp) {
-                    // No child case
                     temp = node;
                     node = nullptr;
                 } else {
-                    // One child case
                     *node = *temp;
                 }
                 delete temp;
             }
             else {
-                // Node with two children: get inorder successor
                 AVLNode* temp = minValueNode(node->right);
                 node->key = temp->key;
                 node->right = deleteHelper(node->right, temp->key);
@@ -150,10 +129,7 @@ private:
         
         if (!node) return node;
         
-        // Update height
         updateHeight(node);
-        
-        // Get balance factor
         int balance = getBalance(node);
         
         // Left Left Case
@@ -179,7 +155,6 @@ private:
         return node;
     }
     
-    // Inorder traversal helper
     void inorderHelper(AVLNode* node) {
         if (node) {
             inorderHelper(node->left);
@@ -188,24 +163,24 @@ private:
         }
     }
     
-    // Print tree structure helper
+    // Fixed ASCII tree visualization
     void printTreeHelper(AVLNode* node, string prefix, bool isLeft) {
         if (node) {
             cout << prefix;
-            cout << (isLeft ? "├──" : "└──");
+            cout << (isLeft ? "|-- " : "`-- ");
             cout << node->key << " (h=" << node->height << ", bf=" << getBalance(node) << ")" << endl;
             
             if (node->left || node->right) {
                 if (node->left)
-                    printTreeHelper(node->left, prefix + (isLeft ? "│   " : "    "), true);
+                    printTreeHelper(node->left, prefix + (isLeft ? "|   " : "    "), true);
                 else {
-                    cout << prefix + (isLeft ? "│   " : "    ") << "├──(null)" << endl;
+                    cout << prefix + (isLeft ? "|   " : "    ") << "|-- (null)" << endl;
                 }
                 
                 if (node->right)
-                    printTreeHelper(node->right, prefix + (isLeft ? "│   " : "    "), false);
+                    printTreeHelper(node->right, prefix + (isLeft ? "|   " : "    "), false);
                 else {
-                    cout << prefix + (isLeft ? "│   " : "    ") << "└──(null)" << endl;
+                    cout << prefix + (isLeft ? "|   " : "    ") << "`-- (null)" << endl;
                 }
             }
         }
